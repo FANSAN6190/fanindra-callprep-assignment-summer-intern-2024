@@ -1,45 +1,24 @@
-from fastapi import FastAPI, File, UploadFile
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
+from src.routes.upload import uploadRouter
+from src.routes.docs import docsRouter
 
 app = FastAPI()
+app = FastAPI(docs_url="/api-docs")
 
 @app.get("/", response_class=HTMLResponse)
-def read_root():
+def diplay_home():
     return  """
             <html>
                 <body>
                     <h1>Hello, World</h1>
+                    <a href="/upload">Upload a PDF</a>
+                    <a href="/search-doc">Search Docs</a>
                 </body>
             </html>
             """
 
-@app.get("/upload", response_class=HTMLResponse)
-def read_root():
-    #upload pdf file only
-    return  """
-            <html>
-                <body>
-                    <form action="/upload" method="post" enctype="multipart/form-data">
-                        <input type="file" name="file" accept=".pdf">
-                        <input type="submit">
-                    </form>
-                </body>
-            </html>
-            """
+app.include_router(uploadRouter)
+app.include_router(docsRouter)
 
 
-@app.post("/upload", response_class=HTMLResponse)
-async def upload_file(file: UploadFile = File(...)):
-    # save file to a folder
-    with open(f"UploadedDocuments/{file.filename}", "wb") as f:
-        f.write(file.file.read())
-    #return f"File '{file.filename}' uploaded successfully"
-    return """
-            <html>
-                <body>
-                    <h1>File Uploaded Successfully</h1>
-                    <a href="/">Back to Home</a>
-                </body>
-            </html>    
-        """
