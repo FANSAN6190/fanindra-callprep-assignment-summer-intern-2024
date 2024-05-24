@@ -16,5 +16,5 @@ EXPOSE 8040
 ENV PINECONE_API_KEY = a8861bb3-e7fa-469d-aecf-0372fbed64ee
 
 # Run main.py when the container launches
-# CMD ["python", "main.py"]
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8040"]
+CMD ["python", "main.py"]
+# CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8040"]

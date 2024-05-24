@@ -1,0 +1,5 @@
+services:
+  - name: fastapi-app
+    run: python3 main.py
+    env:
+      PORT: $PORT
