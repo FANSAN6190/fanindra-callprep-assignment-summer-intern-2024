@@ -7,8 +7,11 @@ from starlette.responses import FileResponse
 from fastapi import HTTPException
 from fastapi.staticfiles import StaticFiles
 import urllib.parse
+from src.service.create_embeddings import create_embeddings
 
 docsRouter = APIRouter()
+
+embedding_creator = create_embeddings()
 
 @docsRouter.get("/documents/{filename}", response_class=Response)
 async def read_document(filename: str):
@@ -48,11 +51,17 @@ def display_search():
 
 @docsRouter.get("/docs", response_class=HTMLResponse)
 def read_docs(q: str = None):
-    
-    documents = os.listdir("UploadedDocuments")
-    links = []
-    for document in documents:
-        encoded_document = urllib.parse.quote(document)
-        links.append(f"<a href='/documents/{encoded_document}'>{document}</a>")
-    return "<br>".join(links)
+    if q:
+        results = embedding_creator.search_documents(q)
+        print("query results: ", results)
+        result_html = "<html><body><h1>Search Results</h1><ul>"
+        for match in results['matches']:
+            filename = match['id']
+            encoded_filename = urllib.parse.quote(filename)
+            result_html += f"<li><a href='/documents/{encoded_filename}'>{filename}</a></li>"
+        result_html += "</ul><a href='/'>Back to Home</a></body></html>"
+        return HTMLResponse(content=result_html)
+    else:
+        return HTMLResponse(content="<html><body><h1>No query provided</h1><a href='/'>Back to Home</a></body></html>")
+
 

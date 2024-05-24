@@ -27,7 +27,15 @@ class create_embeddings:
 
     def preprocess_text(self, doc_path):
         try:
-            text = extract_text(doc_path)
+            file_extension = os.path.splitext(doc_path)[1]
+            if file_extension == '.pdf':
+                text = extract_text(doc_path)
+            elif file_extension == '.txt':
+                with open(doc_path, 'r') as f:
+                    text = f.read()
+            else:
+                print(f"Unsupported file type {file_extension}")
+                return ""
             return text
         except Exception as e:
             print(f"Error extracting text from {doc_path}: {e}")
@@ -42,3 +50,8 @@ class create_embeddings:
             return True
         else:
             return False
+        
+    def search_documents(self, query):
+        query_embedding = self.model.encode(query).tolist()
+        results = self.index.query(vector=query_embedding, top_k=10)
+        return results
