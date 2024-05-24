@@ -3,24 +3,48 @@ from fastapi.responses import HTMLResponse
 from fastapi import FastAPI, File, UploadFile
 from src.service.create_embeddings import create_embeddings
 from typing import List
+from src.service.create_embeddings import create_embeddings
 
 uploadRouter = APIRouter()
-create_embeddings = create_embeddings()
 
 @uploadRouter.get("/upload", response_class=HTMLResponse)
 def display_upload():
     #upload pdf file only
     return  """
             <html>
+                <head>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            background-color: #f0f0f0;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            height: 20vh;
+                        }
+                        form {
+                            margin-top: 20px;
+                        }
+                        input[type="file"] {
+                            margin: 10px 0;
+                        }
+                        input[type="submit"] {
+                            padding: 10px 20px;
+                            background-color: #007BFF;
+                            color: #fff;
+                            border: none;
+                            cursor: pointer;
+                        }
+                    </style>
+                </head>
                 <body>
                     <form action="/upload" method="post" enctype="multipart/form-data">
-                        <input type="file" name="file" accept=".pdf,.txt" multiple>
-                        <input type="submit">
+                        <input type="file" name="file" accept=".pdf">
+                        <input type="submit" value="Upload">
                     </form>
-                    <a href="/">Back to Home</a>
                 </body>
             </html>
-            """
+            """ 
 
 @uploadRouter.post("/upload", response_class=HTMLResponse)
 async def upload_file(file: List[UploadFile] = File(...)):
@@ -37,9 +61,40 @@ async def upload_file(file: List[UploadFile] = File(...)):
 
     return """
             <html>
+                <head>
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            margin: 0;
+                            padding: 0;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            height: 100vh;
+                            background-color: #f0f0f0;
+                        }
+                        h1 {
+                            color: #333;
+                        }
+                        a {
+                            display: inline-block;
+                            margin: 10px;
+                            padding: 10px 20px;
+                            color: #fff;
+                            background-color: #007BFF;
+                            text-decoration: none;
+                            border-radius: 5px;
+                        }
+                        a:hover {
+                            background-color: #0056b3;
+                        }
+                    </style>
+                </head>
                 <body>
-                    <h1>File Uploaded Successfully</h1>
-                    <a href="/">Back to Home</a>
+                    <div>
+                        <h1>File Uploaded Successfully</h1>
+                        <a href="/">Back to Home</a>
+                    </div>
                 </body>
             </html>    
         """

@@ -4,7 +4,7 @@ import os
 from pdfminer.high_level import extract_text
 
 
-class create_embeddings:
+class CreateEmbeddings:
     def __init__(self):
         self.pc = Pinecone(api_key='a8861bb3-e7fa-469d-aecf-0372fbed64ee')
         self.model = SentenceTransformer('all-MiniLM-L6-v2')
@@ -55,3 +55,5 @@ class create_embeddings:
         query_embedding = self.model.encode(query).tolist()
         results = self.index.query(vector=query_embedding, top_k=10)
         return results
+    
+create_embeddings = CreateEmbeddings()
