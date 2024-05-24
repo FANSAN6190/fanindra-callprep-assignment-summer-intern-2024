@@ -60,4 +60,4 @@ if __name__ == "__main__":
     if not os.path.exists("UploadedDocuments"):
         os.makedirs("UploadedDocuments")
     import uvicorn
-    uvicorn.run(app, host="localhost", port=8040)   
+    uvicorn.run(app, host="0.0.0.0", port=8040)   
