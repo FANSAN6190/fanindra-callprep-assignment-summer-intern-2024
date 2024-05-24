@@ -3,3 +3,4 @@ UploadedDocuments/
 __pycache__/
 .vscode/
 .ipynb/
+.env

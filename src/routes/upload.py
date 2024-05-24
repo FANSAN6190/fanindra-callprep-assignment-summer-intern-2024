@@ -39,7 +39,7 @@ def display_upload():
                 </head>
                 <body>
                     <form action="/upload" method="post" enctype="multipart/form-data">
-                        <input type="file" name="file" accept=".pdf">
+                        <input type="file" name="file" accept=".pdf,.txt,.html" multiple required>
                         <input type="submit" value="Upload">
                     </form>
                 </body>
