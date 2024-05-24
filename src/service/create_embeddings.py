@@ -2,10 +2,14 @@ from sentence_transformers import SentenceTransformer
 from pinecone import Pinecone, ServerlessSpec
 import os
 from pdfminer.high_level import extract_text
+from bs4 import BeautifulSoup
+from dotenv import load_dotenv
 
+load_dotenv()
 
-class create_embeddings:
+class CreateEmbeddings:
     def __init__(self):
+        api_key = os.getenv('PINECONE_API_KEY')
         self.pc = Pinecone(api_key='a8861bb3-e7fa-469d-aecf-0372fbed64ee')
         self.model = SentenceTransformer('all-MiniLM-L6-v2')
         self.index_name = 'callprep-case-studies'
@@ -33,6 +37,10 @@ class create_embeddings:
             elif file_extension == '.txt':
                 with open(doc_path, 'r') as f:
                     text = f.read()
+            elif file_extension == '.html':
+                with open(doc_path, 'r') as f:
+                    soup = BeautifulSoup(f, 'html.parser')
+                    text = soup.get_text()
             else:
                 print(f"Unsupported file type {file_extension}")
                 return ""
@@ -55,3 +63,5 @@ class create_embeddings:
         query_embedding = self.model.encode(query).tolist()
         results = self.index.query(vector=query_embedding, top_k=10)
         return results
+    
+create_embeddings = CreateEmbeddings()
