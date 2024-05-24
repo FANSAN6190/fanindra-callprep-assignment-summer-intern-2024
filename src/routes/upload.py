@@ -21,9 +21,7 @@ def display_upload():
                             justify-content: center;
                             align-items: center;
                             height: 20vh;
-                        }
-                        form {
-                            margin-top: 20px;
+                            flex-direction: column;  # Add this line
                         }
                         input[type="file"] {
                             margin: 10px 0;
@@ -35,13 +33,25 @@ def display_upload():
                             border: none;
                             cursor: pointer;
                         }
+                        a {
+                            margin-top: 20px;
+                            color: #007BFF;
+                            text-decoration: none;
+                        }
                     </style>
                 </head>
                 <body>
-                    <form action="/upload" method="post" enctype="multipart/form-data">
-                        <input type="file" name="file" accept=".pdf,.txt,.html" multiple required>
-                        <input type="submit" value="Upload">
-                    </form>
+                    <div>
+                        <form action="/upload" method="post" enctype="multipart/form-data">
+                            <h2 for="file">Upload Document files:</h2>
+                            <p>supported file types : pdf, txt, html</p>
+                            <input type="file" name="file" accept=".pdf,.txt,.html" multiple required>
+                            <input type="submit" value="Upload">
+                        </form>
+                    </div>
+                    <div>
+                        <a href="/">Back to Home</a>
+                    </div>
                 </body>
             </html>
             """ 
