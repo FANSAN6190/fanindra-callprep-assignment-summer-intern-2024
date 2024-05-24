@@ -1,8 +1,10 @@
 from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
 from fastapi import FastAPI, File, UploadFile
+from src.service.create_embeddings import create_embeddings
 
 uploadRouter = APIRouter()
+create_embeddings = create_embeddings()
 
 @uploadRouter.get("/upload", response_class=HTMLResponse)
 def display_upload():
@@ -22,9 +24,15 @@ def display_upload():
 @uploadRouter.post("/upload", response_class=HTMLResponse)
 async def upload_file(file: UploadFile = File(...)):
     # save file to a folder
-    with open(f"UploadedDocuments/{file.filename}", "wb") as f:
+    file_path = f"UploadedDocuments/{file.filename}"
+    with open(file_path, "wb") as f:
         f.write(file.file.read())
-    #return f"File '{file.filename}' uploaded successfully"
+    try:
+        create_embeddings.create_and_save_embeddings(file_path, file.filename)
+    except Exception as e:
+        print(f"Error creating embeddings for {file.filename}: {e}")
+        return f"Error creating embeddings for {file.filename}: {e}"
+
     return """
             <html>
                 <body>
