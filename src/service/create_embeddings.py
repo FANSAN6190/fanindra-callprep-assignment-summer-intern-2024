@@ -1,17 +1,18 @@
-from sentence_transformers import SentenceTransformer
+from gensim.models import Word2Vec
+from gensim.utils import simple_preprocess
 from pinecone import Pinecone, ServerlessSpec
 import os
 from pdfminer.high_level import extract_text
 from bs4 import BeautifulSoup
-from dotenv import load_dotenv
-
-load_dotenv()
+import numpy as np
+import re
 
 class CreateEmbeddings:
     def __init__(self):
         api_key = os.getenv('PINECONE_API_KEY')
         self.pc = Pinecone(api_key='a8861bb3-e7fa-469d-aecf-0372fbed64ee')
-        self.model = SentenceTransformer('all-MiniLM-L6-v2')
+        # self.model = Word2Vec([["dummy"]],vector_size=384, min_count=1)
+        self.model = Word2Vec.load('src/model3/semantic-search_word2vec3.model')
         self.index_name = 'callprep-case-studies'
         existing_indexes = self.pc.list_indexes()
         print(f"Existing indexes: {existing_indexes}")
@@ -29,6 +30,11 @@ class CreateEmbeddings:
 
         self.index = self.pc.Index(self.index_name)
 
+    @staticmethod
+    def clean_filename(filename):
+        # Replace non-ASCII characters with a hyphen
+        return re.sub(r'[^\x00-\x7F]+', '-', filename)
+    
     def preprocess_text(self, doc_path):
         try:
             file_extension = os.path.splitext(doc_path)[1]
@@ -50,9 +56,17 @@ class CreateEmbeddings:
             return ""
 
     def create_and_save_embeddings(self, doc_path, file_name):
+        file_name = self.clean_filename(file_name)
         text = self.preprocess_text(doc_path)
         if text:
-            embedding = self.model.encode(text).tolist()
+            tokenized_text = simple_preprocess(text)
+            self.model.build_vocab([tokenized_text], update=True)
+            self.model.train([tokenized_text], total_examples=self.model.corpus_count, epochs=self.model.epochs)
+            embedding = np.mean([self.model.wv[word] for word in tokenized_text if word in self.model.wv], axis=0)
+            if np.all(np.isnan(embedding)):
+                print(f"No words in {file_name} are in the model's vocabulary. Skipping this file.")
+                return False
+            embedding = embedding.tolist()            
             pinecone_metadata = {'filename': file_name}
             self.index.upsert([(file_name, embedding, pinecone_metadata)])
             return True
@@ -60,8 +74,12 @@ class CreateEmbeddings:
             return False
         
     def search_documents(self, query):
-        query_embedding = self.model.encode(query).tolist()
+        words = simple_preprocess(query)
+        word_vectors = [self.model.wv[word] for word in words if word in self.model.wv]
+        if not word_vectors:
+            print(f"No words in query '{query}' are in the model's vocabulary. Returning empty results.")
+            return {'matches': []}
+        query_embedding = np.mean(word_vectors, axis=0).tolist()
         results = self.index.query(vector=query_embedding, top_k=10)
         return results
-    
 create_embeddings = CreateEmbeddings()
