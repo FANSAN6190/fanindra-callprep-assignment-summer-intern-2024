@@ -1,10 +1,9 @@
 from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
 from fastapi import FastAPI, File, UploadFile
-from src.service.create_embeddings import create_embeddings
 from typing import List
 from src.service.create_embeddings import create_embeddings
-
+import os
 uploadRouter = APIRouter()
 
 @uploadRouter.get("/upload", response_class=HTMLResponse)
@@ -60,6 +59,7 @@ def display_upload():
 async def upload_file(file: List[UploadFile] = File(...)):
     for f in file:
         # save file to a folder
+        os.makedirs("UploadedDocuments", exist_ok=True)
         file_path = f"UploadedDocuments/{f.filename}"
         with open(file_path, "wb") as file_object:
             file_object.write(f.file.read())

@@ -78,8 +78,10 @@ def display_search():
                     </style>
                 </head>
                 <body>
+                    <h1>Search Documents</h1>
                     <form id="searchForm" action="/docs" method="get">
-                        <input type="text" id="searchInput" name="q" value="Search Docs">
+                        <label for="searchInput">Enter Query:</label>
+                        <input type="text" id="searchInput" name="q" value="">
                         <input type="submit" value="Search">
                     </form>
                     <a href="/">Back to Home</a>
