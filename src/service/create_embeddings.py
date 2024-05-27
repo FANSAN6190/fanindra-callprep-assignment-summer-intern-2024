@@ -21,13 +21,12 @@ class CreateEmbeddings:
         if self.index_name not in existing_index_names:
             self.pc.create_index(
                 self.index_name, 
-                dimension=384,
+                dimension=284,
                 spec=ServerlessSpec(
                     cloud='aws', 
                     region='us-east-1'
                 )
             )
-
         self.index = self.pc.Index(self.index_name)
 
     @staticmethod
