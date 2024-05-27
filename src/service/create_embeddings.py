@@ -12,7 +12,7 @@ class CreateEmbeddings:
         api_key = os.getenv('PINECONE_API_KEY')
         self.pc = Pinecone(api_key='a8861bb3-e7fa-469d-aecf-0372fbed64ee')
         # self.model = Word2Vec([["dummy"]],vector_size=384, min_count=1)
-        self.model = Word2Vec.load('src/model3/semantic-search_word2vec3.model')
+        self.model = Word2Vec.load('src/__pycache__/model3/semantic-search_word2vec3.model')
         self.index_name = 'callprep-case-studies'
         existing_indexes = self.pc.list_indexes()
         print(f"Existing indexes: {existing_indexes}")
@@ -21,7 +21,7 @@ class CreateEmbeddings:
         if self.index_name not in existing_index_names:
             self.pc.create_index(
                 self.index_name, 
-                dimension=384,
+                dimension=284,
                 spec=ServerlessSpec(
                     cloud='aws', 
                     region='us-east-1'
