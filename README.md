@@ -1,5 +1,5 @@
 # Semantic Search on Documents
-URL - https://pleasantly-winning-bluebird.ngrok-free.app
+URL - https://document-search-23c19393aea3.herokuapp.com
 supports files with .pdf, .txt, .html extentions
 
 **The Objective:**
